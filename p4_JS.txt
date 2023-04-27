@@ -1,0 +1,24 @@
+const Blockchian = require('./blockchain');
+
+var bitcoin = new Blockchian;
+
+const previousBlockHash = "ABCDEFGHIJKLMNOP"
+const currentBlockData = [
+    {
+        amount : 10,
+        sender : 'Sender1',
+        recipient : 'Reciver1'},
+    {
+        amount : 20,
+        sender : 'Sender2',
+        recipient : 'Reciver2'},
+    {
+        amount : 30,
+        sender : 'Sender3',
+        recipient : 'Reciver3'},
+];
+
+console.log(bitcoin.profOfWork(previousBlockHash, currentBlockData))
+
+// 50157 is the nonce that we get from the above line [i.e proof of work]
+console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData, 50157));
