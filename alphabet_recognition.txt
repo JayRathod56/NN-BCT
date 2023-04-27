@@ -1,0 +1,210 @@
+-import numpy as np 
+
+ 
+ 
+
+# Load MNIST data 
+
+from tensorflow.keras.datasets import mnist 
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data() 
+
+ 
+ 
+
+# Normalize and flatten input data 
+
+X_train = X_train.reshape(X_train.shape[0], -1) / 255.0 
+
+X_test = X_test.reshape(X_test.shape[0], -1) / 255.0 
+
+ 
+ 
+
+# One-hot encode output labels 
+
+y_train = np.eye(10)[y_train] 
+
+y_test = np.eye(10)[y_test] 
+
+ 
+ 
+
+# Define neural network architecture 
+
+input_size = X_train.shape[1] 
+
+hidden_size = 32 
+
+output_size = 10 
+
+ 
+ 
+
+# Initialize weights randomly 
+
+W1 = np.random.randn(input_size, hidden_size) 
+
+b1 = np.zeros(hidden_size) 
+
+W2 = np.random.randn(hidden_size, output_size) 
+
+b2 = np.zeros(output_size) 
+
+ 
+ 
+
+ 
+ 
+
+# Define activation function (sigmoid) 
+
+def sigmoid(x): 
+
+    return 1 / (1 + np.exp(-x)) 
+
+ 
+ 
+
+# Define derivative of activation function (sigmoid) 
+
+def sigmoid_derivative(x): 
+
+    return sigmoid(x) * (1 - sigmoid(x)) 
+
+ 
+ 
+
+# Define forward propagation function 
+
+def forward_propagation(X, W1, b1, W2, b2): 
+
+    Z1 = np.dot(X, W1) + b1 
+
+    A1 = sigmoid(Z1) 
+
+    Z2 = np.dot(A1, W2) + b2 
+
+    A2 = sigmoid(Z2) 
+
+    return A1, A2 
+
+ 
+ 
+
+# Define backward propagation function 
+
+def backward_propagation(X, y, A1, A2, W1, W2): 
+
+    dZ2 = A2 - y 
+
+    dW2 = np.dot(A1.T, dZ2) 
+
+    db2 = np.sum(dZ2, axis=0) 
+
+    dZ1 = np.dot(dZ2, W2.T) * sigmoid_derivative(A1) 
+
+    dW1 = np.dot(X.T, dZ1) 
+
+    db1 = np.sum(dZ1, axis=0) 
+
+    return dW1, db1, dW2, db2 
+
+ 
+ 
+
+# Define training loop 
+
+num_epochs = 10 
+
+learning_rate = 0.1 
+
+batch_size = 64 
+
+num_batches = X_train.shape[0] // batch_size 
+
+ 
+ 
+
+for epoch in range(num_epochs): 
+
+    for i in range(num_batches): 
+
+        # Select a random batch of samples 
+
+        batch_indices = np.random.choice(X_train.shape[0], batch_size) 
+
+        X_batch = X_train[batch_indices] 
+
+        y_batch = y_train[batch_indices] 
+
+         
+
+        # Forward propagation 
+
+        A1, A2 = forward_propagation(X_batch, W1, b1, W2, b2) 
+
+         
+
+        # Backward propagation 
+
+        dW1, db1, dW2, db2 = backward_propagation(X_batch, y_batch, A1, A2, W1, W2) 
+
+         
+
+        # Update weights and biases 
+
+        W1 -= learning_rate * dW1 
+
+        b1 -= learning_rate * db1 
+
+        W2 -= learning_rate * dW2 
+
+        b2 -= learning_rate * db2 
+
+         
+
+    # Evaluate performance on test set 
+
+    A1_test, A2_test = forward_propagation(X_test, W1, b1, W2, b2) 
+
+    accuracy = np.mean(np.argmax(A2_test, axis=1) == np.argmax(y_test, axis=1)) 
+
+    print(f"Epoch {epoch}: Test accuracy = {accuracy}") 
+
+ 
+
+ 
+
+import matplotlib.pyplot as plt 
+
+%matplotlib inline 
+
+# Create the subplots 
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5)) 
+
+sample =6567 
+
+image = X_train[sample] 
+
+#Plot the data on the subplot 
+
+ax1.imshow(image.reshape(28,28)) 
+
+ax1.set_title('xD') 
+
+sample =45 
+
+image = X_train[sample] 
+
+ax2.imshow(image.reshape(28,28)) 
+
+ax2.set_title('') 
+
+ 
+ 
+
+plt.show() 
+
+ 
