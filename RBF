@@ -1,0 +1,217 @@
+import numpy as np 
+
+from sklearn.cluster import KMeans 
+
+from sklearn.metrics.pairwise import euclidean_distances 
+
+from sklearn.preprocessing import LabelBinarizer 
+
+from sklearn.metrics import accuracy_score 
+
+ 
+ 
+
+class RBFNet(): 
+
+    def __init__(self, n_hidden, gamma=1.0): 
+
+        self.n_hidden = n_hidden 
+
+        self.gamma = gamma 
+
+        self.hidden_centers = None 
+
+        self.hidden_widths = None 
+
+        self.output_weights = None 
+
+        self.label_binarizer = LabelBinarizer() 
+
+ 
+ 
+
+    def _calculate_hidden_layer(self, X): 
+
+        D = euclidean_distances(X, self.hidden_centers) 
+
+        H = np.exp(-self.gamma * D ** 2) 
+
+        return H 
+
+ 
+ 
+
+    def _initialize_centers(self, X): 
+
+        kmeans = KMeans(n_clusters=self.n_hidden) 
+
+        kmeans.fit(X) 
+
+        self.hidden_centers = kmeans.cluster_centers_ 
+
+ 
+ 
+
+    def _initialize_widths(self, X): 
+
+        D = euclidean_distances(X, self.hidden_centers) 
+
+        self.hidden_widths = np.sqrt(1 / (2 * self.n_hidden) * np.sum(D ** 2)) 
+
+ 
+ 
+
+    def fit(self, X, y): 
+
+        self.label_binarizer.fit(y) 
+
+        y = self.label_binarizer.transform(y) 
+
+ 
+ 
+
+        self._initialize_centers(X) 
+
+        self._initialize_widths(X) 
+
+        H = self._calculate_hidden_layer(X) 
+
+ 
+ 
+
+        self.output_weights = np.dot(np.linalg.pinv(H), y) 
+
+ 
+ 
+
+    def predict(self, X): 
+
+        H = self._calculate_hidden_layer(X) 
+
+        y_pred = np.dot(H, self.output_weights) 
+
+        return self.label_binarizer.inverse_transform(y_pred) 
+
+ 
+ 
+ 
+
+ 
+
+data = [ 
+
+    [1,0,1], 
+
+    [0,1,1], 
+
+    [1,1,0], 
+
+    [0,0,0], 
+
+] 
+
+ 
+
+X = [] 
+
+y = [] 
+
+ 
+ 
+
+for i in data: 
+
+  X.append(i[:-1]) 
+
+ 
+ 
+
+for i in data: 
+
+  y.append(i[-1]) 
+
+ 
+
+import numpy as np 
+
+ 
+ 
+
+X = np.array(X) 
+
+y = np.array(y) 
+
+ 
+
+from sklearn.metrics import accuracy_score 
+
+ 
+ 
+
+rbf = RBFNet(4) 
+
+rbf.fit(X,y) 
+
+ 
+ 
+
+y_pred = rbf.predict(X) 
+
+ 
+ 
+
+print("Xor \nAccuracy:", accuracy_score(y, y_pred)) 
+
+ 
+
+from sklearn.datasets import load_iris 
+
+ 
+ 
+
+X, y = load_iris(return_X_y = True) 
+
+ 
+
+X 
+
+ 
+
+y 
+
+ 
+
+from sklearn.model_selection import train_test_split 
+
+ 
+ 
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 5) 
+
+ 
+
+rbf = RBFNet(100) 
+
+rbf.fit(X_train, y_train) 
+
+ 
+
+y_pred = rbf.predict(X_test) 
+
+ 
+
+from sklearn.metrics import accuracy_score 
+
+ 
+ 
+
+acc = accuracy_score(y_test, y_pred) 
+
+ 
+ 
+
+print('Accuracy of RBF on Iris: %f %%'%(acc*100) ) 
+
+ 
+
+ 
