@@ -1,0 +1,407 @@
+# And data 
+
+data = [ 
+
+    [1,1,1], 
+
+    [1,0,0], 
+
+    [0,1,0], 
+
+    [0,0,0] 
+
+] 
+
+  
+
+# Or data 
+
+  
+
+# data = [ 
+
+#     [1,1,1], 
+
+#     [0,0,0], 
+
+#     [1,0,1], 
+
+#     [0,1,1] 
+
+# ] 
+
+  
+
+def predict_using_threshold(row, weight): 
+
+  activation = weight[0] 
+
+  
+
+  for i in range(len(row)-1): 
+
+    activation += weight[i+1] * row[i] 
+
+  
+
+  return 0 if activation <=0 else 1 
+
+  
+
+# Learning means changing of weights 
+
+  
+
+def train_weights_with_threshold(train, l_rate, n_epoch): 
+
+  weights = [0.0 for i in range(len(train[0]))] 
+
+  sum_err_list = [] 
+
+  
+
+  for epoch in range(n_epoch): 
+
+    sum_err = 0.0 
+
+    for row in train: 
+
+      prediction = predict_using_threshold(row, weights) 
+
+      error = row[-1] - prediction 
+
+      sum_err += error**2 
+
+       
+
+      # Updating Bias 
+
+      weights[0] = weights[0] + l_rate + error 
+
+  
+
+      for i in range(len(row)-1): 
+
+         
+
+        # Updating Weights 
+
+        weights[i+1] = weights[i+1] + row[i] * l_rate * error 
+
+  
+
+    print('Epoch=%d, learning_rate=%f, Total_Error=%f'%(epoch, l_rate, sum_err)) 
+
+    sum_err_list.append(sum_err) 
+
+     
+
+  return (weights, sum_err_list) 
+
+  
+
+  
+
+#Hyperparameter 
+
+l_rate = 0.1 
+
+n_epoch = 50 
+
+  
+
+weights, Sum_Error_list = train_weights_with_threshold(data, l_rate, n_epoch) 
+
+print(weights) 
+
+  
+
+# Trying trained weights 
+
+for row in data: 
+
+  prediction = predict_using_threshold(row, weights) 
+
+  print('Expected = %d, Predicted = %d'%(row[-1],prediction)) 
+
+  
+
+from matplotlib import pyplot as plt 
+
+  
+
+X = [i for i in range(n_epoch)] 
+
+y = Sum_Error_list 
+
+  
+
+plt.plot(X,y) 
+
+plt.title('Epoch vs Total Error (Threshold)') 
+
+plt.xlabel('Epoch') 
+
+plt.ylabel("Total Error") 
+
+  
+
+plt.show() 
+
+  
+
+def predict_with_sigmoid(row, weight): 
+
+  import math 
+
+  
+
+  activation = weight[0] 
+
+  
+
+  for i in range(len(row)-1): 
+
+    activation += weight[i+1] * row[i] 
+
+   
+
+  sigmoid = (1/(1+math.exp(-activation))) 
+
+  
+
+  return 0 if sigmoid < 0.5 else 1 
+
+  # return sigmoid 
+
+  
+
+# Learning means changing of weights 
+
+  
+
+def train_weights_with_sigmoid(train, l_rate, n_epoch): 
+
+  weights = [0.0 for i in range(len(train[0]))] 
+
+  sum_err_list = [] 
+
+  
+
+  for epoch in range(n_epoch): 
+
+    sum_err = 0.0 
+
+    for row in train: 
+
+      prediction = predict_with_sigmoid(row, weights) 
+
+      error = row[-1] - prediction 
+
+      sum_err += error**2 
+
+       
+
+      # Updating Bias 
+
+      weights[0] = weights[0] + l_rate + error 
+
+  
+
+      for i in range(len(row)-1): 
+
+         
+
+        # Updating Weights 
+
+        weights[i+1] = weights[i+1] + row[i] * l_rate * error 
+
+  
+
+    print('Epoch=%d, learning_rate=%f, Total_Error=%f'%(epoch, l_rate, sum_err)) 
+
+    sum_err_list.append(sum_err) 
+
+     
+
+  return (weights, sum_err_list) 
+
+  
+
+#Hyperparameter 
+
+l_rate = 0.1 
+
+n_epoch = 50 
+
+  
+
+weights, Sum_Error_list = train_weights_with_sigmoid(data, l_rate, n_epoch) 
+
+print(weights) 
+
+  
+
+# Trying trained weights 
+
+for row in data: 
+
+  prediction = predict_with_sigmoid(row, weights) 
+
+  print('Expected = %d, Predicted = %d'%(row[-1],prediction)) 
+
+  
+
+from matplotlib import pyplot as plt 
+
+  
+
+X = [i for i in range(n_epoch)] 
+
+y = Sum_Error_list 
+
+  
+
+plt.plot(X,y) 
+
+plt.title('Epoch vs Total Error (Sigmoid)') 
+
+plt.xlabel('Epoch') 
+
+plt.ylabel("Total Error") 
+
+  
+
+plt.show() 
+
+  
+
+def predict_using_tanh(row, weight): 
+
+  import math 
+
+  
+
+  activation = weight[0] 
+
+  
+
+  for i in range(len(row)-1): 
+
+    activation += weight[i+1] * row[i] 
+
+  
+
+  tanh = ((math.exp(activation)) - (math.exp(-activation)))/((math.exp(activation)) + (math.exp(-activation))) 
+
+  
+
+  return 0 if tanh <= 0 else 1 
+
+  # return tanh 
+
+  
+
+# Learning means changing of weights 
+
+  
+
+def train_weights_with_tanh(train, l_rate, n_epoch): 
+
+  weights = [0.0 for i in range(len(train[0]))] 
+
+  sum_err_list = [] 
+
+  
+
+  for epoch in range(n_epoch): 
+
+    sum_err = 0.0 
+
+    for row in train: 
+
+      prediction = predict_using_tanh(row, weights) 
+
+      error = row[-1] - prediction 
+
+      sum_err += error**2 
+
+       
+
+      # Updating Bias 
+
+      weights[0] = weights[0] + l_rate + error 
+
+  
+
+      for i in range(len(row)-1): 
+
+         
+
+        # Updating Weights 
+
+        weights[i+1] = weights[i+1] + row[i] * l_rate * error 
+
+  
+
+    print('Epoch=%d, learning_rate=%f, Total_Error=%f'%(epoch, l_rate, sum_err)) 
+
+    sum_err_list.append(sum_err) 
+
+     
+
+  return (weights, sum_err_list) 
+
+  
+
+#Hyperparameter 
+
+l_rate = 0.1 
+
+n_epoch = 50 
+
+  
+
+weights, Sum_Error_list = train_weights_with_tanh(data, l_rate, n_epoch) 
+
+print(weights) 
+
+  
+
+# Trying trained weights 
+
+for row in data: 
+
+  prediction = predict_using_tanh(row, weights) 
+
+  print('Expected = %d, Predicted = %d'%(row[-1],prediction)) 
+
+  
+
+from matplotlib import pyplot as plt 
+
+  
+
+X = [i for i in range(n_epoch)] 
+
+y = Sum_Error_list 
+
+  
+
+plt.plot(X,y) 
+
+plt.title('Epoch vs Total Error (Tanh)') 
+
+plt.xlabel('Epoch') 
+
+plt.ylabel("Total Error") 
+
+  
+
+plt.show() 
+
+ 
+
+ 
+
+ 
